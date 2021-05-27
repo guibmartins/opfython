@@ -88,15 +88,7 @@ class OPF:
 
     @distance.setter
     def distance(self, distance):
-        if distance not in ['additive_symmetric', 'average_euclidean', 'bhattacharyya', 'bray_curtis',
-                            'canberra', 'chebyshev', 'chi_squared', 'chord', 'clark', 'cosine', 'dice',
-                            'divergence', 'euclidean', 'gaussian', 'gower', 'hamming', 'hassanat', 'hellinger',
-                            'jaccard', 'jeffreys', 'jensen', 'jensen_shannon', 'k_divergence', 'kulczynski',
-                            'kullback_leibler', 'log_euclidean', 'log_squared_euclidean', 'lorentzian',
-                            'manhattan', 'matusita', 'max_symmetric', 'mean_censored_euclidean', 'min_symmetric',
-                            'neyman', 'non_intersection', 'pearson', 'sangvi', 'soergel', 'squared', 'squared_chord',
-                            'squared_euclidean', 'statistic', 'topsoe', 'vicis_symmetric1', 'vicis_symmetric2',
-                            'vicis_symmetric3', 'vicis_wave_hedges']:
+        if distance not in d.DISTANCES.keys():
             raise e.TypeError('`distance` should be `additive_symmetric`, `average_euclidean`, `bhattacharyya`, '
                               '`bray_curtis`, `canberra`, `chebyshev`, `chi_squared`, `chord`, `clark`, `cosine`, '
                               '`dice`, `divergence`, `euclidean`, `gaussian`, `gower`, `hamming`, `hassanat`, `hellinger`, '
