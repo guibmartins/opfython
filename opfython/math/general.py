@@ -5,6 +5,7 @@ import numpy as np
 
 import opfython.math.distance as d
 import opfython.utils.logging as l
+import opfython.utils.exception as e
 
 logger = l.get_logger(__name__)
 
@@ -209,3 +210,64 @@ def purity(labels, preds):
     _purity = np.sum(np.max(c_matrix, axis=0)) / len(labels)
 
     return _purity
+
+
+def mean_absolute_error(labels, preds):
+    """Calculates the Mean Absolute Error (MAE) between true and predicted labels.
+
+    Args:
+        labels (np.array | list): List or numpy array holding the true labels.
+        preds (np.array | list): List or numpy array holding the predicted labels.
+
+    Returns:
+        The MAE measure between 0 and 1.
+
+    """
+
+    # Making sure that labels is a numpy array
+    labels = np.asarray(labels)
+
+    # Making sure that predictions is a numpy array
+    preds = np.asarray(preds)
+
+    # Number of testing samples to be evaluated
+    n = float(len(labels))
+
+    if n <= 0:
+        raise e.ValueError('`n` should be a positive real number.')
+
+    return np.sum(np.abs(labels - preds)) / n
+
+
+def mean_squared_error(labels, preds, square_root=False):
+    """Calculates the Mean Squared Error (MSE) between true and predicted labels.
+
+    Args:
+        labels (np.array | list): List or numpy array holding the true labels.
+        preds (np.array | list): List or numpy array holding the predicted labels.
+        square_root (bool): Boolean that indicated whether to apply squared root or not to MSE.
+
+    Returns:
+        The MSE or RMSE measure between 0 and 1.
+
+    """
+
+    # Making sure that labels is a numpy array
+    labels = np.asarray(labels)
+
+    # Making sure that predictions is a numpy array
+    preds = np.asarray(preds)
+
+    # Number of testing samples to be evaluated
+    n = float(len(labels))
+
+    if n <= 0:
+        raise e.ValueError('`n` should be a positive real number.')
+
+    mse = np.sum((labels - preds) ** 2) / n
+
+    if square_root:
+        # Calculate the root-mean squared error (RMSE)
+        return mse ** 0.5
+
+    return mse

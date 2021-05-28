@@ -26,7 +26,8 @@ class ANNUnsupervisedOPF(OPF):
     """
 
     def __init__(
-            self, min_k=1, max_k=1, distance='euclidean', pre_computed_distance=None, ann_params=None):
+            self, min_k=1, max_k=1, distance='euclidean',
+            pre_computed_distance=None, ann_params=None):
         """Initialization method.
 
         Args:
@@ -48,13 +49,13 @@ class ANNUnsupervisedOPF(OPF):
         # Defining the maximum `k` value for cutting the subgraph
         self.max_k = max_k
 
-        self.train_time = 0.
-
-        self.predict_time = 0.
-
         self.ann_params = ann_params
 
         self.ann_search = None
+
+        self.fit_time = 0.
+
+        self.pred_time = 0.
 
         # Defining the ann search method
         if ann_params.get('name') == 'annoy':
@@ -359,6 +360,9 @@ class ANNUnsupervisedOPF(OPF):
         if self.ann_params.get('name') == 'hnsw':
             self.ann_params['ef'] = self.max_k
 
+        if self.ann_params.get('name') == 'nneighbors':
+            self.ann_params['n_neighbors'] = self.max_k
+
         self.ann_search = self.ann_class(self.ann_params)
 
         # Build the ANN index
@@ -377,11 +381,11 @@ class ANNUnsupervisedOPF(OPF):
         end = time.time()
 
         # Calculating training task time
-        self.train_time = end - start
+        self.fit_time = end - start
 
         logger.info('Classifier has been clustered with.')
         logger.info(f'Number of clusters: {self.subgraph.n_clusters}.')
-        logger.info(f'Clustering time: {self.train_time : .4f} seconds.')
+        logger.info(f'Clustering time: {self.fit_time : .4f} seconds.')
 
     def predict(self, X_val, I_val=None):
         """Predicts new data using the pre-trained classifier.
@@ -467,10 +471,10 @@ class ANNUnsupervisedOPF(OPF):
         end = time.time()
 
         # Calculating prediction task time
-        self.predict_time = end - start
+        self.pred_time = end - start
 
         logger.info('Data has been predicted.')
-        logger.info(f'Prediction time: {self.predict_time : .4f} seconds.')
+        logger.info(f'Prediction time: {self.pred_time : .4f} seconds.')
 
         return preds, clusters
 
