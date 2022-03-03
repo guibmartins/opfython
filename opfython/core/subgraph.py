@@ -206,6 +206,9 @@ class Subgraph:
             self.nodes[i].n_plateaus = 0
             self.nodes[i].adjacency = []
 
+            # Resets the list of distances for each adjacent node
+            self.nodes[i].adj_distances = []
+
     def mark_nodes(self, i):
         """Marks a node and its whole path as relevant.
 

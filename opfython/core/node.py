@@ -55,6 +55,9 @@ class Node:
         # List of adjacent nodes
         self.adjacency = []
 
+        # List of distances for adjacent nodes
+        self.adj_distances = []
+
         # The cluster's root node identifier
         self.root = 0
 
@@ -226,6 +229,21 @@ class Node:
             raise e.TypeError('`adjacency` should be a list')
 
         self._adjacency = adjacency
+
+    @property
+    def adj_distances(self):
+        """list: Adjacent nodes.
+
+        """
+
+        return self._adj_distances
+
+    @adj_distances.setter
+    def adj_distances(self, adj_distances):
+        if not isinstance(adj_distances, list):
+            raise e.TypeError('`adj_distances` should be a list')
+
+        self._adj_distances = adj_distances
 
     @property
     def root(self):
