@@ -343,7 +343,7 @@ class ANNSubgraph(Subgraph):
         self.max_density = -c.FLOAT_MAX
 
         # Creating an array to hold the p.d.f. calculation
-        pdf = np.zeros(self.n_nodes, dtype=float)
+        pdf = np.zeros(self.n_nodes, dtype=np.float64)
 
         # For every possible node
         for i in range(self.n_nodes):
@@ -351,7 +351,7 @@ class ANNSubgraph(Subgraph):
             # pdf[i] = 0.
 
             # Initialize the number of p.d.f. calculations as 1
-            n_pdf = len(self.nodes[i].adjacency[:n_neighbours]) + 1
+            n_pdf = 1 + len(self.nodes[i].adjacency[:n_neighbours])
 
             # For every possible `k` value
             pdf[i] = np.sum(np.exp(-np.asfarray(self.nodes[i].adj_distances[:n_neighbours]) / self.constant))
@@ -418,7 +418,7 @@ class ANNSubgraph(Subgraph):
 
             self.nodes[i].radius = max_dist
 
-            # Also make sure that it does not have any adjacent nodes
+            # Also make sure that it does not have any adjacent nodes (only for min cut)
             self.nodes[i].n_plateaus = 0
 
             max_distances = np.array([max_distances, distances[1:]]).max(axis=0)
@@ -443,10 +443,16 @@ class ANNSubgraph(Subgraph):
         logger.debug('Eliminating maxima above height = %s ...', height)
 
         # Checks if height is bigger than zero
-        if height > 0:
+        if 0. < height < 1.:
             # For every possible node
             for i in range(self.n_nodes):
                 # Calculates its new cost
-                self.nodes[i].cost = np.maximum(self.nodes[i].density - height, 0)
+                self.nodes[i].cost = np.maximum(self.nodes[i].density - height, 0.)
 
         logger.debug('Maxima eliminated.')
+
+    def eliminate_maxima_area(self, area):
+        pass
+
+    def eliminate_maxima_volume(self, volume):
+        pass

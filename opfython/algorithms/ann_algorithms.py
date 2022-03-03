@@ -300,7 +300,7 @@ class KD_Tree(ApproximateNNSearch):
 
         self.tree = KDTree(
             X,
-            leaf_size=self.params.get('n_leaf'),
+            leaf_size=self.params.get('leaf_size'),
             metric=self.params.get('distance')
         )
 

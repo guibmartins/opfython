@@ -26,7 +26,7 @@ class ANNUnsupervisedOPF(OPF):
     """
 
     def __init__(
-            self, min_k=1, max_k=1, distance='euclidean',
+            self, min_k=1, max_k=1, distance='euclidean', eliminate_maxima={},
             pre_computed_distance=None, ann_params=None):
         """Initialization method.
 
@@ -48,6 +48,8 @@ class ANNUnsupervisedOPF(OPF):
 
         # Defining the maximum `k` value for cutting the subgraph
         self.max_k = max_k
+
+        self.eliminate_maxima = eliminate_maxima
 
         self.ann_params = ann_params
 
@@ -105,8 +107,8 @@ class ANNUnsupervisedOPF(OPF):
 
         self._max_k = max_k
 
-    def _clustering(self, n_neighbours):
-        """Clusters the subgraph using using a `k` value (number of neighbours).
+    def _clustering(self, n_neighbours, with_plateaus=False):
+        """Clusters the subgraph using a `k` value (number of neighbours).
 
         Args:
             n_neighbours (int): Number of neighbours to be used.
@@ -115,6 +117,7 @@ class ANNUnsupervisedOPF(OPF):
 
         # For every possible node
         for i in range(self.subgraph.n_nodes):
+
             # For every possible `k` value
             for k in range(n_neighbours):
                 # Gathers node `i` adjacent node
@@ -127,6 +130,7 @@ class ANNUnsupervisedOPF(OPF):
 
                     # For every possible `l` value
                     for l in range(n_neighbours):
+
                         # Gathers node `j` adjacent node
                         adj = int(self.subgraph.nodes[j].adjacency[l])
 
@@ -245,6 +249,7 @@ class ANNUnsupervisedOPF(OPF):
 
         # For every possible node
         for i in range(self.subgraph.n_nodes):
+
             # Calculates its number of adjacent nodes
             n_adjacents = self.subgraph.nodes[i].n_plateaus + n_neighbours
 
@@ -252,20 +257,21 @@ class ANNUnsupervisedOPF(OPF):
 
             # For every possible adjacent node
             for k in range(n_adjacents):
+
                 # Gathers its adjacent node identifier
                 j = int(self.subgraph.nodes[i].adjacency[k])
 
                 # If distance is bigger than 0
-                if distance[k] > 0.0:
+                if distance[k] > 0:
                     # If nodes belongs to the same clusters
                     if self.subgraph.nodes[i].cluster_label == self.subgraph.nodes[j].cluster_label:
                         # Increments the internal cluster distance
-                        internal_cluster[self.subgraph.nodes[i].cluster_label] += 1 / distance[k]
+                        internal_cluster[self.subgraph.nodes[i].cluster_label] += 1. / float(distance[k])
 
                     # If nodes belongs to distinct clusters
                     else:
                         # Increments the external cluster distance
-                        external_cluster[self.subgraph.nodes[i].cluster_label] += 1 / distance[k]
+                        external_cluster[self.subgraph.nodes[i].cluster_label] += 1. / float(distance[k])
 
         # For every possible cluster
         for l in range(self.subgraph.n_clusters):
@@ -294,35 +300,39 @@ class ANNUnsupervisedOPF(OPF):
         # Initialize the minimum cut as maximum possible value
         min_cut = c.FLOAT_MAX
 
-        best_k = 1
+        best_k = max_k
 
         # For every possible value of `k`
         for k in range(min_k, max_k + 1):
 
+            if min_cut == 0.0:
+                break
+
             # If minimum cut is different than zero
-            if min_cut != 0.0:
-                # Gathers the subgraph's density
-                self.subgraph.density = max_distances[k - 1]
+            # if min_cut != 0.0:
 
-                # Gathers current `k` as the subgraph's best `k` value
-                self.subgraph.best_k = k
+            # Gathers the subgraph's density
+            self.subgraph.density = max_distances[k - 1]
 
-                # Calculates the p.d.f.
-                self.subgraph.calc_pdf(k, self.distance_fn)
+            # Gathers current `k` as the subgraph's best `k` value
+            self.subgraph.best_k = k
 
-                # Clustering with current `k` value
-                self._clustering(k)
+            # Calculates the p.d.f.
+            self.subgraph.calc_pdf(k, self.distance_fn)
 
-                # Performs the normalized cut with current `k` value
-                cut = self._normalized_cut(k)
+            # Clustering with current `k` value
+            self._clustering(k)
 
-                # If the cut's cost is smaller than minimum cut
-                if cut < min_cut:
-                    # Replace its value
-                    min_cut = cut
+            # Performs the normalized cut with current `k` value
+            cut = self._normalized_cut(k)
 
-                    # And defines a new best `k` value
-                    best_k = k
+            # If the cut's cost is smaller than minimum cut
+            if cut < min_cut:
+                # Replace its value
+                min_cut = cut
+
+                # And defines a new best `k` value
+                best_k = k
 
         # Destroy current arcs
         self.subgraph.destroy_arcs()
@@ -336,7 +346,7 @@ class ANNUnsupervisedOPF(OPF):
         # Calculating the new p.d.f. with the best `k` value
         self.subgraph.calc_pdf(best_k, self.distance_fn)
 
-        logger.debug('Best: %d | Minimum cut: %d.', best_k, min_cut)
+        logger.debug(f'Best: {best_k} | Minimum cut: {min_cut: .4f}.')
 
     def fit(self, X_train, Y_train=None, I_train=None):
         """Fits data in the classifier.
@@ -370,6 +380,19 @@ class ANNUnsupervisedOPF(OPF):
 
         # Performing the best minimum cut on the subgraph
         self._best_minimum_cut(self.min_k, self.max_k)
+
+        if len(self.eliminate_maxima) > 0:
+
+            if list(self.eliminate_maxima.keys())[0] in ['height', 'area', 'volume']:
+
+                key, value = self.eliminate_maxima.popitem()
+
+                if key == 'height':
+                    self.subgraph.eliminate_maxima_height(value)
+                elif key == 'area':
+                    self.subgraph.eliminate_maxima_area(value)
+                else:
+                    self.subgraph.eliminate_maxima_volume(value)
 
         # Clustering the data with best `k` value
         self._clustering(self.subgraph.best_k)
