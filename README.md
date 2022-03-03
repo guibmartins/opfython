@@ -1,7 +1,7 @@
 # OPFython: A Python-Inspired Optimum-Path Forest Classifier
 
 [![Latest release](https://img.shields.io/github/release/gugarosa/opfython.svg)](https://github.com/gugarosa/opfython/releases)
-[![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.4594303-006DB9.svg)](https://doi.org/10.5281/zenodo.4594303)
+[![DOI](https://img.shields.io/badge/DOI-10.1016/j.simpa.2021.100113-006DB9.svg)](https://doi.org/10.1016/j.simpa.2021.100113)
 [![Build status](https://img.shields.io/travis/com/gugarosa/opfython/master.svg)](https://github.com/gugarosa/opfython/releases)
 [![Open issues](https://img.shields.io/github/issues/gugarosa/opfython.svg)](https://github.com/gugarosa/opfython/issues)
 [![License](https://img.shields.io/github/license/gugarosa/opfython.svg)](https://github.com/gugarosa/opfython/blob/master/LICENSE)
@@ -36,16 +36,28 @@ OPFython is compatible with: **Python 3.6+**.
 
 ## Citation
 
-If you use OPFython to fulfill any of your needs, please cite us:
+If you use OPFython to fulfill any of your needs, please cite any of the following:
 
 ```BibTex
-@misc{rosa2020opfython,
-    title={OPFython: A Python-Inspired Optimum-Path Forest Classifier},
-    author={Gustavo Henrique de Rosa and João Paulo Papa and Alexandre Xavier Falcão},
-    year={2020},
-    eprint={2001.10420},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG}
+@article{rosa2021simpa,
+    title = {OPFython: A Python implementation for Optimum-Path Forest},
+    author = {Gustavo H. {de Rosa} and João P. Papa},
+    journal = {Software Impacts},
+    pages = {100113},
+    year = {2021},
+    issn = {2665-9638},
+    doi = {https://doi.org/10.1016/j.simpa.2021.100113},
+}
+```
+
+```BibTex
+@misc{rosa2021speedup,
+      title={Speeding Up OPFython with Numba}, 
+      author={Gustavo H. de Rosa and João Paulo Papa},
+      year={2021},
+      eprint={2106.11828},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
 }
 ```
 

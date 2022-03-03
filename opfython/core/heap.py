@@ -157,12 +157,9 @@ class Heap:
 
         """
 
-        # If last position equals to size - 1
         if self.last == (self.size - 1):
-            # Return as True
             return True
 
-        # If not, return as False
         return False
 
     def is_empty(self):
@@ -173,12 +170,9 @@ class Heap:
 
         """
 
-        # If last position is equal to -1
         if self.last == -1:
-            # Return as True
             return True
 
-        # Return as False
         return False
 
     def dad(self, i):
@@ -192,7 +186,6 @@ class Heap:
 
         """
 
-        # Returns the dad's position
         return int(((i - 1) / 2))
 
     def left_son(self, i):
@@ -206,7 +199,6 @@ class Heap:
 
         """
 
-        # Returns the left son's position
         return int((2 * i + 1))
 
     def right_son(self, i):
@@ -220,7 +212,6 @@ class Heap:
 
         """
 
-        # Return the right son's position
         return int((2 * i + 2))
 
     def go_up(self, i):
@@ -241,10 +232,8 @@ class Heap:
                 # Swap the positions
                 self.p[j], self.p[i] = self.p[i], self.p[j]
 
-                # Applies node's i value to the positioning list
+                # Applies node's `i` and `j` values to the positioning list
                 self.pos[self.p[i]] = i
-
-                # Applies node's j value to the positioning list
                 self.pos[self.p[j]] = j
 
                 # Makes both indexes equal
@@ -260,10 +249,8 @@ class Heap:
                 # Swap the positions
                 self.p[j], self.p[i] = self.p[i], self.p[j]
 
-                # Applies node's i value to the positioning list
+                # Applies node's `i` and `j` values to the positioning list
                 self.pos[self.p[i]] = i
-
-                # Applies node's j value to the positioning list
                 self.pos[self.p[j]] = j
 
                 # Makes both indexes equal
@@ -280,10 +267,8 @@ class Heap:
 
         """
 
-        # Gathers the left son's position
+        # Gathers the left and right son's positions
         left = self.left_son(i)
-
-        # Gathers the right son's position
         right = self.right_son(i)
 
         # Equals the value of `j` and `i` counters
@@ -318,10 +303,8 @@ class Heap:
             # Swap node's position
             self.p[j], self.p[i] = self.p[i], self.p[j]
 
-            # Marks the new position in `i`
+            # Marks the new position in `i` and `j`
             self.pos[self.p[i]] = i
-
-            # Marks the new position in `j`
             self.pos[self.p[j]] = j
 
             # Goes down in the heap
@@ -338,21 +321,15 @@ class Heap:
 
         """
 
-        # Checks if heap is not full
         if not self.is_full():
             # Increases the last node's counter
             self.last += 1
 
-            # Adds the new node to the heap
+            # Adds the new node to the heap, mark it as gray and mark its positioning
             self.p[self.last] = p
-
-            # Marks it as gray
             self.color[p] = c.GRAY
-
-            # Marks its positioning
             self.pos[p] = self.last
 
-            # Go up in the heap
             self.go_up(self.last)
 
             return True
@@ -367,30 +344,24 @@ class Heap:
 
         """
 
-        # Checks if heap is not empty
         if not self.is_empty():
             # Gathers the node's value
             p = self.p[0]
 
-            # Marks it as not positioned
+            # Marks it as not positioned and black-color
             self.pos[p] = -1
-
-            # Change its color to black
             self.color[p] = c.BLACK
 
             # Gathers the new position of first node
             self.p[0] = self.p[self.last]
 
-            # Marks it as positioned
+            # Marks it as positioned and remove its value
             self.pos[self.p[0]] = 0
-
-            # Remove its value
             self.p[self.last] = -1
 
             # Decreases the last counter
             self.last -= 1
 
-            # Go down in the heap
             self.go_down(0)
 
             return p
@@ -413,12 +384,9 @@ class Heap:
         if self.color[p] == c.BLACK:
             pass
 
-        # If node's color is white
+        # Checks if node has not been inserted yet
         if self.color[p] == c.WHITE:
-            # Inserts a new node
             self.insert(p)
 
-        # If node's color is grey
         else:
-            # Go up in the heap to desired position
             self.go_up(self.pos[p])

@@ -22,7 +22,6 @@ def parse_loader(data):
 
     logger.info('Parsing data ...')
 
-    # Tries to parse the dataframe
     try:
         # From third columns beyond, we should have the features
         X = data[:, 2:]
@@ -34,24 +33,18 @@ def parse_loader(data):
         _, counts = np.unique(Y, return_counts=True)
 
         # If there is only one class
-        if len(counts) < 2:
-            # Raises a ValueError
-            raise e.ValueError(
-                'Parsed data should have at least two distinct labels')
+        if len(counts) == 1:
+            logger.warning('Parsed data only have a single label.')
 
         # If there are unsequential labels
-        if len(counts) != np.max(Y):
-            # Raises a ValueError
-            raise e.ValueError(
-                'Parsed data should have sequential labels, e.g., 1, 2, ..., n')
+        if len(counts) != (np.max(Y) + 1):
+            raise e.ValueError('Parsed data should have sequential labels, e.g., 0, 1, ..., n-1')
 
         logger.info('Data parsed.')
 
         return X, Y.astype(int)
 
-    # If dataframe could not be parsed
     except TypeError as error:
-        # Logs an error
         logger.error(error)
 
         return None, None
